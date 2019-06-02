@@ -106,7 +106,7 @@ As we default all keypoints visible, if considering the visibility of each keypo
 so that they can be annotated as invisible.
 
 ### Stage III: Human Reviser
-In this stage, only the AI model errors detected by the human reviewer need be revised.
+In this stage, only the AI model errors detected by the human reviewer need to be revised.
 
 #### Input
 1. Folder of images/frames set
@@ -122,7 +122,7 @@ ${ROOT}/img_gt.pkl
 The image revising window
 ![Revise_Window](doc/Revise_Window.png)
 
-The keypoints, which need be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
+The keypoints, which need to be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
 human reviser needs to capture the head bounding box by holding and releasing left button to create a pink rectangle. 
 
 | Operation | Description |
