@@ -2,7 +2,7 @@
 
 This is the code for the following paper:
 
-X. Huang, B. Rezaei and S. Ostadabbas, ‚ÄúAH-CoLT: An AI-Human Co-Labeling Toolbox to Augment Efficient Groundtruth Generation‚Äù 
+X. Huang, B. Rezaei and S. Ostadabbas, ìAH-CoLT: An AI-Human Co-Labeling Toolbox to Augment Efficient Groundtruth Generationî 
 
 The goal of the AH-CoLT is to provide an efficient and augmentative annotation tool to facilitate creating large labeled visual datasets.
 This toolbox presents an efficient semi-automatic groundtruth generation framework for unlabeled images/videos. 
@@ -91,7 +91,6 @@ The image reviewing window
 
 The format of labels, which represent the AI predicted keypoints, is `poseindex_keypointindex`. 
 
-#### Operations
 | Operation | Description |
 | --- | --- |
 | Click left button of mouse| Accept current predicted keypoint |
@@ -103,11 +102,11 @@ The format of labels, which represent the AI predicted keypoints, is `poseindex_
 | Press 'n' on keyboard | Recheck current image |
 
 #####Note:
-As we default all keypoints visible, if considering the visibility of each keypoint, please mark obscured keypoints as error, 
+As we default all keypoints visible, if considering the visibility of each keypoint, please mark obscured keypoints as errors, 
 so that they can be annotated as invisible.
 
 ### Stage III: Human Reviser
-In this stage, only the AI model errors detected by the human reviewer need be revised.
+In this stage, only the AI model errors detected by the human reviewer need to be revised.
 
 #### Input
 1. Folder of images/frames set
@@ -123,10 +122,9 @@ ${ROOT}/img_gt.pkl
 The image revising window
 ![Revise_Window](doc/Revise_Window.png)
 
-The keypoints, which need be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
+The keypoints, which need to be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
 human reviser needs to capture the head bounding box by holding and releasing left button to create a pink rectangle. 
 
-#### Operations
 | Operation | Description |
 | --- | --- |
 | Click left button of mouse| Capture the new position of red keypoint and set as 'visible' |
