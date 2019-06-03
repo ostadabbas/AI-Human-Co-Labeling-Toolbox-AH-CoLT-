@@ -7,8 +7,8 @@ from torch.autograd import Variable
 import numpy as np
 import cv2 
 import matplotlib.pyplot as plt
-from Models.Hourglass.pose.detection.util import count_parameters as count
-from Models.Hourglass.pose.detection.util import convert2cpu as cpu
+from Models.Detection.util import count_parameters as count
+from Models.Detection.util import convert2cpu as cpu
 from PIL import Image, ImageDraw
 
 

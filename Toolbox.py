@@ -318,7 +318,7 @@ class Human_Reviewer(Frame):
         #     lists_poses = self.frames_boxes[self.idx]
         #     vis_pose_idx = helpers.visposes(lists_poses)
 
-        lists_vis, flatten_vis = helpers.viskpts(lists_kpts, vis_pose_idx, self.model)
+        lists_vis, flatten_vis = helpers.viskpts(img, lists_kpts, vis_pose_idx, self.model)
 
         num_poses = len(lists_kpts)
         num_kpts = lists_kpts[0].shape[1]
@@ -640,8 +640,8 @@ class Human_Reviser(Frame):
         #     # load current boxes
         #     lists_poses = self.frames_boxes[self.idx]
         #     vis_pose_idx = helpers.visposes(lists_poses)
-        lists_vis, flatten_vis = helpers.viskpts(lists_kpts, vis_pose_idx, self.model)
-        print("vis", lists_vis)
+        lists_vis, flatten_vis = helpers.viskpts(img, lists_kpts, vis_pose_idx, self.model)
+        # print("vis", lists_vis)
         flat_arr_flags = arr_flags.flatten()
         for i in range(flat_arr_flags.shape[0]):
             if flat_arr_flags[i] == 0 or flat_arr_flags[i] == 2:

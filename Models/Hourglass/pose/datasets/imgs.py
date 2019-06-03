@@ -4,7 +4,7 @@ import torch.utils.data as data
 import cv2
 
 from Models.Hourglass.pose.utils.transforms import *
-from Models.Hourglass.pose.detection.person_detection import detect_person
+from Models.Detection.person_detection import detect_person
 
 
 class Imgs(data.Dataset):

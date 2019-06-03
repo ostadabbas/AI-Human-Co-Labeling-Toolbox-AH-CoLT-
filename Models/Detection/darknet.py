@@ -7,14 +7,15 @@ from torch.autograd import Variable
 import numpy as np
 import cv2 
 import matplotlib.pyplot as plt
-from Models.Hourglass.pose.detection.util import count_parameters as count
-from Models.Hourglass.pose.detection.util import convert2cpu as cpu
-from Models.Hourglass.pose.detection.util import predict_transform
+
+from Models.Detection.util import count_parameters as count
+from Models.Detection.util import convert2cpu as cpu
+from Models.Detection.util import predict_transform
 
 class test_net(nn.Module):
     def __init__(self, num_layers, input_size):
         super(test_net, self).__init__()
-        self.num_layers= num_layers
+        self.num_layers = num_layers
         self.linear_1 = nn.Linear(input_size, 5)
         self.middle = nn.ModuleList([nn.Linear(5,5) for x in range(num_layers)])
         self.output = nn.Linear(5,2)

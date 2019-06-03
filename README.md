@@ -37,7 +37,7 @@ The interface of toolbox is developed by tkinter in python3.7.
     *  (2) PyTorch (>= 0.4.1): GPU version is not necessary.
 2. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
 and put the model folder into ./Models/Hourglass/data/mpii.
-3. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into ./Models/Hourglass/pose/detection.
+3. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into ./Models/Detection/data.
 
 ## Running the GUI
 Run `Toolbox.py` to launch main window of AH-CoLT, which includes three stages: AI Labeler, Human Reviewer, and Human Reviser.

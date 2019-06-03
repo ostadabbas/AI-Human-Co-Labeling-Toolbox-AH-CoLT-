@@ -1,22 +1,22 @@
 from __future__ import division
 
 import os
-from Models.Hourglass.pose.detection.util import *
-from Models.Hourglass.pose.detection.darknet import Darknet
-from Models.Hourglass.pose.detection.preprocess import prep_image
+from Models.Detection.util import *
+from Models.Detection.darknet import Darknet
+from Models.Detection.preprocess import prep_image
 
 confidence = 0.5
 nms_thesh = 0.4
 num_classes = 80
 
-cfg_file = "Models/Hourglass/pose/detection/cfg/yolov3.cfg"
+cfg_file = "Models/Detection/cfg/yolov3.cfg"
 file = os.path.join(os.getcwd(), cfg_file)
 print(file)
 fp = open(file, "r")
 names = fp.read().split("\n")[:-1]
 
-weights_file = "./Models/Hourglass/pose/detection/yolov3.weights"
-classes = load_classes("./Models/Hourglass/pose/detection/data/coco.names")
+weights_file = "./Models/Detection/data/yolov3.weights"
+classes = load_classes("./Models/Detection/data/coco.names")
 
 class test_net(nn.Module):
     def __init__(self, num_layers, input_size):

@@ -17,14 +17,15 @@ def visposes(lists_poses):
     return vis_pose_idx
 
 
-def viskpts(lists_kpts, vis_pose_idx, model):
+def viskpts(img, lists_kpts, vis_pose_idx, model):
     kpt_thres = 2
     lists_vis_kpts = []
     flatten_vis_kpts = []
     if model == "Hourglass":
         vis_kpts = []
         for point in range(lists_kpts[0].shape[1]):
-            if lists_kpts[0][0, point] >= 0 and lists_kpts[0][1, point] >= 0:
+            if lists_kpts[0][0, point] >= 0 and lists_kpts[0][1, point] >= 0 and lists_kpts[0][0, point] <= img.shape[1]\
+               and lists_kpts[0][1, point] <= img.shape[0]:
                 vis_kpts.append(1)
                 flatten_vis_kpts.append(1)
             else:
