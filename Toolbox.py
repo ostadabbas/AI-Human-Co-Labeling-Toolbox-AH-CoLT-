@@ -16,20 +16,23 @@ import glob
 import helpers
 import AI_models
 
+import sys
+x=5000
+sys.setrecursionlimit(x)
 
 LARGE_FONT = ("Verdana", 12)  # font's family is Verdana, font's size is 12
 
 # dictionary of keypoints annotation
 dict_model = {
-        # "OpenCV(image)":"[OpenCV(image)]  0: Head 1: Neck 2: R_Shoulder 3: R_Elbow 4: R_Wrist 5: L_Shoulder"
-        #          " 6: L_Elbow 7: L_Wrist 8: R_Hip 9: R_Knee 10: R_Ankle 11: L_Hip 12: L_Knee 13: L_Ankle 14: Chest",
-
         "Hourglass":" 0: R_Ankle, 1: R_Knee, 2: R_Hip, 3: L_Hip, 4: L_Knee, 5: L_Ankle, 6: Pelv, 7: Thrx, 8: Neck, 9: Head,"
                     " 10: R_Wrist, 11: R_Elbow, 12: R_Shoulder, 13: L_Shoulder, 14: L_Elbow, 15: L_Wrist",
 
-        # "Mask R-CNN":" 0: Nose, 1: L_Eye, 2: R_Eye, (3: L_Ear), (4: R_Ear), 5: L_Shoulder, 6: R_Shoulder, 7: L_Elbow,"
-        #              " 8: R_Elbow, 9: L_Wrist, 10: R_Wrist, 11: L_Hip, 12: R_Hip, 13: L_Knee, 14: R_Knee, 15: L_Ankle,
-        #               16: R_Ankle"
+        "Faster R-CNN":" 0: Nose, 1: L_Eye, 2: R_Eye, 3: L_Ear, 4: R_Ear, 5: L_Shoulder, 6: R_Shoulder, 7: L_Elbow,"
+                     " 8: R_Elbow, 9: L_Wrist, 10: R_Wrist, 11: L_Hip, 12: R_Hip, 13: L_Knee, 14: R_Knee, 15: L_Ankle, 16: R_Ankle",
+
+        "FAN":" 1-17: Jaw, 18-22: L_Eyebrow, 23-27: R_Eyebrow, 28-36: Nose, 37-42: L_Eye, 43-48: R_Eye, "               
+             " 49-60: Outer_Lip, 61-68: Inner_Lip",
+
         }
 
 # global variables
@@ -65,7 +68,7 @@ class MainWindow(Tk):
         container.grid_columnconfigure(0, weight=1)  # make the cell in grid cover the entire window
         self.frames = {}  # these are pages we want to navigate to
         # Style().configure("My.TFrame", background='#fff4f7')
-        for F,geometry in zip((MainMenu, AI_Labeler, Human_Reviewer, Human_Reviser), ("580x300", "560x320", "610x200", "610x200")):  # for each page
+        for F,geometry in zip((MainMenu, AI_Labeler, Human_Reviewer, Human_Reviser), ("700x300", "600x320", "620x200", "620x200")):  # for each page
             frame = F(container, self)  # create the page
             self.frames[F] = (frame, geometry)  # store into frames
             # frame.config(style='My.TFrame')
@@ -117,7 +120,7 @@ class AI_Labeler(Frame):
 
         txt_model = Label(self, text="Please choose a model:")
         txt_model.grid(row=2, column=0, sticky="nw", padx=10, pady=10)
-        self.Models = ["Hourglass"] # To do: add models, such as Mask R-CNN, OpenCV, etc.
+        self.Models = ["Hourglass", "Faster R-CNN", "FAN"] # To do: add models, such as OpenCV, etc.
         self.combo_model = Combobox(self, state="readonly", values=self.Models)
         self.combo_model.grid(row=2, column=1, sticky="nw", pady=10)
         self.combo_model.bind("<<ComboboxSelected>>", self.combo_callback)
@@ -209,10 +212,14 @@ class AI_Labeler(Frame):
         #     model = "opencv"
         #     AI_models.OpenCV_Model(self.resource, model)
         #     # messagebox.showinfo("Info", "AI Labeling is done!")
-        # elif self.combo_model.get() == "Mask R-CNN" and self.resource.endswith((".mp4", ".avi")):
-        #     model = "detections"
-        #     AI_models.DetectAndTrack_Model(self.resource, model)
-        #     # messagebox.showinfo("Info", "AI Labeling is done!")
+        elif self.combo_model.get() == "Faster R-CNN":
+            model = "fRCNN"
+            AI_models.detectron2_model(self.resource, model)
+            messagebox.showinfo("Info", "AI Labeling is done!")
+        elif self.combo_model.get() == "FAN":                
+            model = "fan"
+            AI_models.FAN_model(self.resource, model)
+            messagebox.showinfo("Info", "AI Labeling is done!")
         else:
             messagebox.showwarning("Warning", "Please choose proper model to label!")
 
@@ -269,21 +276,30 @@ class Human_Reviewer(Frame):
             self.model = "Hourglass"
         elif string == "opencv":
             self.model = "OpenCV"
-        elif string == "detections":
-            self.model = "Mask R-CNN"
+        elif string == "fRCNN":
+            self.model = "Faster R-CNN"
+        elif string == "fan":                   
+            self.model = "FAN"
 
     def review_label(self):
         global dict_flags
         dict_flags.clear()
 
         # load images list
-        self.im_list = sorted(glob.glob(os.path.join(self.resource, "*.jpg")))
+        types = ('*.jpg', '*.png', '*,jpeg')
+        files_grabbed = []
+        for files in types:
+            files_grabbed.extend(glob.glob(os.path.join(self.resource, files)))
+        self.im_list = sorted(files_grabbed)
 
         # load AI kpts array
         with open(self.AIfile, 'rb') as f:
             data = pickle.load(f)
         self.frames_kpts = data['all_keyps'][1]
-        self.frames_boxes = data['all_boxes'][1]
+        if self.model == "Hourglass":
+            self.frames_boxes = data['all_boxes'][1]
+        else:
+            self.frames_boxes = data['all_boxes'][0]
 
         self.num_frames = len(self.frames_kpts)
         print("Total frames: ", self.num_frames)
@@ -309,7 +325,7 @@ class Human_Reviewer(Frame):
         # load current keypoints
         lists_kpts = self.frames_kpts[self.idx]
 
-        if self.model == "Hourglass":
+        if self.model == "Hourglass" or self.model == "Faster R-CNN" or self.model == "FAN":
             # single-person has only one pose
             vis_pose_idx = [0]
         # elif self.model == "Mask R-CNN":
@@ -530,8 +546,10 @@ class Human_Reviser(Frame):
             self.model = "OpenCV"
         elif string == "hg":
             self.model = "Hourglass"
-        elif string == "detections":
-            self.model = "Mask R-CNN"
+        elif string == "fRCNN":
+            self.model = "Faster R-CNN"
+        elif string == "fan": 
+            self.model = "FAN"
 
     def choose_flags(self):
         # load flags file
@@ -546,17 +564,25 @@ class Human_Reviser(Frame):
         dict_flags.clear()
 
         # load images list
-        self.im_list = sorted(glob.glob(os.path.join(self.resource, "*.jpg")))
+        types = ('*.jpg', '*.png', '*.jpeg')
+        files_grabbed = []
+        for files in types:
+            files_grabbed.extend(glob.glob(os.path.join(self.resource, files)))
+        self.im_list = sorted(files_grabbed)
 
         # load AI kpts array
         with open(self.AIfile, 'rb') as f:
             data = pickle.load(f)
 
 
-        if self.model == "Hourglass":
+        if self.model == "Hourglass" or self.model == "Faster R-CNN" or self.model == "FAN":
             org_kpts = data['all_keyps'][1]
-            frames_boxes = data['all_boxes'][1]
+            if self.model == "Hourglass":
+                frames_boxes = data['all_boxes'][1]
+            else:
+                frames_boxes = data['all_boxes'][0]
             result_kpts = copy.deepcopy(org_kpts)
+            result['images'] = []
             result['all_keyps'] = [[], result_kpts]
             result['all_boxes'] = [[] for i in range(len(result_kpts))]
             self.frames_kpts = result['all_keyps'][1]
@@ -591,6 +617,7 @@ class Human_Reviser(Frame):
         im_name = os.path.basename(self.im_list[self.idx])
         img = cv2.imread(self.im_list[self.idx])
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        result['images'].append(im_name)
 
         # load current flags
         lists_flags = self.dict_flags[str(self.idx)]
@@ -606,7 +633,7 @@ class Human_Reviser(Frame):
         for i in range(len(delete)):
             pose = int(delete[i] / num_kpts)
             joint = delete[i] % num_kpts
-            if self.model == "Hourglass":
+            if self.model == "Hourglass" or self.model == "Faster R-CNN" or self.model == "FAN":
                 # set the x,y to negative value
                 result['all_keyps'][1][self.idx][pose][0][joint] = -45
                 result['all_keyps'][1][self.idx][pose][1][joint] = -45
@@ -620,7 +647,7 @@ class Human_Reviser(Frame):
         for i in range(len(insert)):
             pose = int(insert[i] / num_kpts)
             joint = insert[i] % num_kpts
-            if self.model == "Hourglass":
+            if self.model == "Hourglass" or self.model == "Faster R-CNN" or self.model == "FAN":
                 # set the x,y as coorindates of neck keypoint
                 result['all_keyps'][1][self.idx][pose][0][joint] = result['all_keyps'][1][self.idx][pose][0][8]
                 result['all_keyps'][1][self.idx][pose][1][joint] = result['all_keyps'][1][self.idx][pose][1][8]
@@ -632,7 +659,7 @@ class Human_Reviser(Frame):
         lists_kpts = self.frames_kpts[self.idx]
         print("kpt", lists_kpts)
 
-        if self.model == "Hourglass":
+        if self.model == "Hourglass" or self.model == "Faster R-CNN" or self.model == "FAN":
             # single-person has only one pose
             vis_pose_idx = [0]
         # elif self.model == "Mask R-CNN":
@@ -697,12 +724,22 @@ class Human_Reviser(Frame):
             result['all_keyps'][1][self.idx][pose][1][joint] = fixed[i][1]
             result['all_keyps'][1][self.idx][pose][-1][joint] = fixed[i][2]
 
+        if self.model == "Faster R-CNN":
+            for num in range(num_poses):
+                for joint in range(len(result['all_keyps'][1][self.idx][num][-1])):
+                    if (result['all_keyps'][1][self.idx][num][-1][joint] == 1):
+                        result['all_keyps'][1][self.idx][num][-1][joint] = 2
+                    if (result['all_keyps'][1][self.idx][num][-1][joint] == 0):
+                        result['all_keyps'][1][self.idx][num][-1][joint] = 1
+                    if (result['all_keyps'][1][self.idx][num][0][joint] == -45 and result['all_keyps'][1][self.idx][num][1][joint] == -45):
+                        result['all_keyps'][1][self.idx][num][-1][joint] = 0
+
         self.idx = self.idx + 1
         if self.idx < len(self.frames_kpts):
             self.show_flags()
         else:
-            messagebox.showinfo("Information", "All frames are revised and keypoints are saved!")
             helpers.savepkl(result, self.resource, "gt")
+            messagebox.showinfo("Information", "All frames are revised and keypoints are saved!")
             plt.close()
 
     def onclick_revise(self, event):

@@ -8,13 +8,16 @@ The goal of the AH-CoLT is to provide an efficient and augmentative annotation t
 This toolbox presents an efficient semi-automatic groundtruth generation framework for unlabeled images/videos. 
 AH-CoLT enables accurate groundtruth labeling by incorporating the outcomes of state-of-the-art AI recognizers into a time-efficient human-based review and revise process.
 
-We are trying to integrate different annotation models into toolbox. So far, we only imported Hourglass model for single-person 
-image annotation. Multi-person image labeling or facial landmarks annotation will be imported into our toolbox.  
+Now we integrate different 2D annotation models into toolbox:
+1. **Hourglass**: Single person 16 keypoints annotation in MPII fasion based on Hourglass pose estimation.
+2. **Faster RCNN**: Single person 17 keypoints annotation in COCO fashion based on Faster R-CNN pose estimation.
+3. **FAN**: Single person 68 facial landmarks based on FAN's face alignment.
+
 
 Contact: 
 
-[Xiaofei Huang](huang.xiaof@husky.neu.edu),
-[Behnaz Rezaei](brezaei@ece.neu.edu),
+[Xiaofei Huang](xhuang@ece.neu.edu),
+[Behnaz Rezaei](shawnzhu@ece.neu.edu),
 [Sarah Ostadabbas](ostadabbas@ece.neu.edu)
 
 
@@ -30,14 +33,17 @@ Contact:
 
 
 ## Requirements 
-The interface of toolbox is developed by tkinter in python3.7.
+The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04.
 
 1. Install following libraries:
-    *  (1) OpenCV
-    *  (2) PyTorch (>= 0.4.1): GPU version is not necessary.
-2. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
-and put the model folder into ./Models/Hourglass/data/mpii.
-3. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into ./Models/Detection/data.
+    *  (1) [pyTorch](https://pytorch.org/) 1.6 with CUDA 10.1
+    *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md)
+    *  (3) [face-alignment](https://github.com/1adrianb/face-alignment)
+2. Run `pip install -r requirements.txt` to install other libraries.
+3. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
+and put the model folder into `./Models/Hourglass/data/mpii`.
+4. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into `./Models/Detection/data`.
+5. Download one of COCO Person Keypoint Detection models from [Detectron2 Model Zoo](https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md).  (e.g. [keypoint_rcnn_R_50_FPN_3x](https://dl.fbaipublicfiles.com/detectron2/COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x/137849621/model_final_a6e10b.pkl), and put the file into `./Models/Detectron2/models`.
 
 ## Running the GUI
 Run `Toolbox.py` to launch main window of AH-CoLT, which includes three stages: AI Labeler, Human Reviewer, and Human Reviser.
@@ -51,15 +57,15 @@ and select an appropriate already trained model as the initial AI labeler.
 The types of labels outputted by the AI model is then displayed in the textbox.
 
 Model Selection:
-* Hourglass: 16 keypoints for single-person images. (In use)
-* Mask R-CNN: 16 keypoints for multi-person images. (To do)
-* OpenPose: for multi-person images. (To do)
+* Hourglass: 16 MPII keypoints for single-person images.
+* Faster R-CNN: 17 COCO keypoints for single-person images.
+* FAN: 68 facial landmarks for single-person images.
 
 The "AI Labeler" window
 ![AI_Labeler](doc/AI_Labeler.png)
 
 #### Input
-Choose a directory of images set or a file of video. Each image must be JPEG file. The format of video file could be MP4, AVI or MOV.
+Choose a directory of images set or a file of video. Each image could be .jpeg or .png file. The format of video file could be MP4, AVI or MOV.
 ##### Example:
 ```
 {ROOT}/img
@@ -133,7 +139,7 @@ human reviser needs to capture the head bounding box by holding and releasing le
 | Hold and release left button of mouse | Create a rectangle box |
 | Press 'y' on keyboard | Confirm revising of current image (ONLY work after revising all keypoints and capturing bounding box)
 
-
+**Note**: In MPII fashion or for the 68 facial landmarks, the rectangle box is created for head bounding box, while it is for body bounding box in COCO fashion.  
 
 
 ## Citation 
@@ -145,8 +151,10 @@ human reviser needs to capture the head bounding box by holding and releasing le
 
 
 ## Acknowledgements
-The person detector is brought from [pytorch-yolo-v3](https://github.com/ayooshkathuria/pytorch-yolo-v3), which is based on 
-[YOLOv3: An Incremental Improvement](https://pjreddie.com/media/files/papers/YOLOv3.pdf). And the code of hourglass model 
-for AI Labeler comes from [pytorch-pose](https://github.com/bearpaw/pytorch-pose).
+1. The person detector is brought from [pytorch-yolo-v3](https://github.com/ayooshkathuria/pytorch-yolo-v3), which is based on 
+[YOLOv3: An Incremental Improvement](https://pjreddie.com/media/files/papers/YOLOv3.pdf).
+2. The hourglass pose estimation for AI Labeler comes from [pytorch-pose](https://github.com/bearpaw/pytorch-pose).
+3. The Faster R-CNN pose estimation for AI Labeler comes from [Detectron2](https://github.com/facebookresearch/detectron2)
+4. The facial landmarks detector comes from [face-alignment](https://github.com/1adrianb/face-alignment)
 
 
