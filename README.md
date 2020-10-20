@@ -17,7 +17,7 @@ Now we integrate different 2D annotation models into toolbox:
 Contact: 
 
 [Xiaofei Huang](xhuang@ece.neu.edu),
-[Behnaz Rezaei](shawnzhu@ece.neu.edu),
+[Shaotong Zhu](shawnzhu@ece.neu.edu),
 [Sarah Ostadabbas](ostadabbas@ece.neu.edu)
 
 
