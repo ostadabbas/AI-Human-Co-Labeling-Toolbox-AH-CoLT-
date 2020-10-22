@@ -1,9 +1,5 @@
 # AI Human Co-Labeling Toolbox (AH-CoLT) 
 
-This is the code for the following paper:
-
-X. Huang, B. Rezaei and S. Ostadabbas, “AH-CoLT: An AI-Human Co-Labeling Toolbox to Augment Efficient Groundtruth Generation” 
-
 The goal of the AH-CoLT is to provide an efficient and augmentative annotation tool to facilitate creating large labeled visual datasets.
 This toolbox presents an efficient semi-automatic groundtruth generation framework for unlabeled images/videos. 
 AH-CoLT enables accurate groundtruth labeling by incorporating the outcomes of state-of-the-art AI recognizers into a time-efficient human-based review and revise process.
@@ -36,8 +32,8 @@ Contact:
 The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04.
 
 1. Install following libraries:
-    *  (1) [pyTorch](https://pytorch.org/) 1.6 with CUDA 10.1
-    *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md)
+    *  (1) [pyTorch](https://pytorch.org/) 1.6 with CPU
+    *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md) without GPU
     *  (3) [face-alignment](https://github.com/1adrianb/face-alignment)
 2. Run `pip install -r requirements.txt` to install other libraries.
 3. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
@@ -143,6 +139,16 @@ human reviser needs to capture the head bounding box by holding and releasing le
 
 
 ## Citation 
+```BibTeX
+@inproceedings{huang2019ah,
+  title={AH-CoLT: an AI-Human Co-Labeling Toolbox to Augment Efficient Groundtruth Generation},
+  author={Huang, Xiaofei and Rezaei, Behnaz and Ostadabbas, Sarah},
+  booktitle={2019 IEEE 29th International Workshop on Machine Learning for Signal Processing (MLSP)},
+  pages={1--6},
+  year={2019},
+  organization={IEEE}
+}
+```
 
 ## License 
 * This code is for non-commercial purpose only. 

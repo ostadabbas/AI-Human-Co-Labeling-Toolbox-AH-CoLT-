@@ -35,8 +35,19 @@ dict_model = {
 
         }
 
+# frame geometry dict
+geometry = {
+           "BranchMenu": "700x300",
+           "BodyMenu": "700x300", 
+           "FaceMenu": "700x300",
+           "AI_Labeler": "600x320",
+           "Human_Reviewer": "620x200",
+           "Human_Reviser": "620x200"
+           }
+
 # global variables
 target = os.getcwd()  # save results under root path
+branch = 0 # branch index 0: none, 1: body, 2: face
 num_kpts = 0  # number of keypoints of current pose
 num_poses = 0  # number of poses of current image
 txt_list = []  # record texts on current canvas
@@ -62,47 +73,93 @@ class MainWindow(Tk):
         self.resizable(False, False)
 
         # this container contains all the pages
-        container = Frame(self)
-        container.pack(side= "top", fill = "both", expand = True)
-        container.grid_rowconfigure(0, weight=1)  # make the cell in grid cover the entire window
-        container.grid_columnconfigure(0, weight=1)  # make the cell in grid cover the entire window
+        self.container = Frame(self)
+        self.container.pack(side= "top", fill = "both", expand = True)
+        self.container.grid_rowconfigure(0, weight=1)  # make the cell in grid cover the entire window
+        self.container.grid_columnconfigure(0, weight=1)  # make the cell in grid cover the entire window
+        '''
         self.frames = {}  # these are pages we want to navigate to
         # Style().configure("My.TFrame", background='#fff4f7')
-        for F,geometry in zip((MainMenu, AI_Labeler, Human_Reviewer, Human_Reviser), ("700x300", "600x320", "620x200", "620x200")):  # for each page
+        for F,geometry in zip((BranchMenu, BodyMenu, FaceMenu, AI_Labeler, Human_Reviewer, Human_Reviser), ("700x300", "700x300", "700x300", "600x320", "620x200", "620x200")):  # for each page
             frame = F(container, self)  # create the page
             self.frames[F] = (frame, geometry)  # store into frames
             # frame.config(style='My.TFrame')
             frame.grid(row=0, column=0, sticky="nsew")  # grid it to container
+        '''
+        self.show_frame(BranchMenu, "BranchMenu", 0)  # let the first page is StartPage
 
-            self.show_frame(MainMenu)  # let the first page is StartPage
+    def show_frame(self, F, F_name, branch_idx):
+        global branch
+        branch = branch_idx
 
-    def show_frame(self, name):
-        frame, geometry = self.frames[name]
-        self.geometry(geometry)
+        frame = F(self.container, self)
+        self.geometry(geometry[F_name])
+        frame.grid(row=0, column=0, sticky="nsew")  # grid it to container
         frame.tkraise()
 
     def exit(self):
         self.destroy()
 
-
-class MainMenu(Frame):
+class BranchMenu(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-
         # Style().configure("My.TLabel", background='#fff4f7')
         title = Label(self, text="AI Human Co-labeling Toolbox (AH-CoLT)", font="none 20 bold") #none 20 bold
         title.pack(pady=10, padx=10)  # center alignment
 
         Style().configure("My.TButton", font=('Helvetica', 12))
         # Style().map('My.TButton', background=[('active', 'red')])
-        button1 = Button(self, text='AI Labeler', command=lambda: controller.show_frame(AI_Labeler), style='My.TButton')
+        button1 = Button(self, text='Body Keypoints Annotation', command=lambda: controller.show_frame(BodyMenu, "BodyMenu", 1), style='My.TButton')
         button1.pack(fill="both", pady=10, padx=200, expand=True)
-        button2 = Button(self, text='Human Reviewer', command=lambda: controller.show_frame(Human_Reviewer), style='My.TButton')
+        button2 = Button(self, text='Faical Landmarks Annotation', command=lambda: controller.show_frame(FaceMenu, "FaceMenu", 2), style='My.TButton')
         button2.pack(fill="both", pady=10, padx=200, expand=True)
-        button3 = Button(self, text='Human Reviser', command=lambda: controller.show_frame(Human_Reviser), style='My.TButton')
-        button3.pack(fill="both", pady=10, padx=200, expand=True)
         button4 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
         button4.pack(fill="both", pady=10, padx=200, expand=True)
+
+
+class BodyMenu(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+
+        # Style().configure("My.TLabel", background='#fff4f7')
+        title = Label(self, text="Body Keypoints Annotation", font="none 20 bold") #none 20 bold
+        title.pack(pady=10, padx=10)  # center alignment
+
+        Style().configure("My.TButton", font=('Helvetica', 12))
+        # Style().map('My.TButton', background=[('active', 'red')])
+
+        button1 = Button(self, text='AI Labeler', command=lambda: controller.show_frame(AI_Labeler, "AI_Labeler", branch), style='My.TButton')
+        button1.pack(fill="both", pady=10, padx=200, expand=True)
+        button2 = Button(self, text='Human Reviewer', command=lambda: controller.show_frame(Human_Reviewer, "Human_Reviewer", branch), style='My.TButton')
+        button2.pack(fill="both", pady=10, padx=200, expand=True)
+        button3 = Button(self, text='Human Reviser', command=lambda: controller.show_frame(Human_Reviser, "Human_Reviser", branch), style='My.TButton')
+        button3.pack(fill="both", pady=10, padx=200, expand=True)
+        button4 = Button(self, text='MainMenu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
+        button4.pack(fill="both", pady=10, padx=200, expand=True)
+        button5 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
+        button5.pack(fill="both", pady=10, padx=200, expand=True)
+
+class FaceMenu(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+
+        # Style().configure("My.TLabel", background='#fff4f7')
+        title = Label(self, text="Faical Landmarks Annotation", font="none 20 bold") #none 20 bold
+        title.pack(pady=10, padx=10)  # center alignment
+
+        Style().configure("My.TButton", font=('Helvetica', 12))
+        # Style().map('My.TButton', background=[('active', 'red')])
+
+        button1 = Button(self, text='AI Labeler', command=lambda: controller.show_frame(AI_Labeler, "AI_Labeler", branch), style='My.TButton')
+        button1.pack(fill="both", pady=10, padx=200, expand=True)
+        button2 = Button(self, text='Human Reviewer', command=lambda: controller.show_frame(Human_Reviewer, "Human_Reviewer", branch), style='My.TButton')
+        button2.pack(fill="both", pady=10, padx=200, expand=True)
+        button3 = Button(self, text='Human Reviser', command=lambda: controller.show_frame(Human_Reviser, "Human_Reviser", branch), style='My.TButton')
+        button3.pack(fill="both", pady=10, padx=200, expand=True)
+        button4 = Button(self, text='MainMenu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
+        button4.pack(fill="both", pady=10, padx=200, expand=True)
+        button5 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
+        button5.pack(fill="both", pady=10, padx=200, expand=True)
 
 
 class AI_Labeler(Frame):
@@ -110,7 +167,6 @@ class AI_Labeler(Frame):
         Frame.__init__(self, parent)
         label = Label(self, text='AI Labeler', font=LARGE_FONT)
         label.grid(row=0, column=1, columnspan=1, sticky="e", padx=10, pady=10)
-
         # Choose and display resource folder
         self.output_res = Text(self, width=50, height=1, wrap="word", bg="white")
         self.output_res.grid(row=1, column=0, columnspan=4, sticky="nw",padx=10, pady=10)
@@ -120,7 +176,18 @@ class AI_Labeler(Frame):
 
         txt_model = Label(self, text="Please choose a model:")
         txt_model.grid(row=2, column=0, sticky="nw", padx=10, pady=10)
-        self.Models = ["Hourglass", "Faster R-CNN", "FAN"] # To do: add models, such as OpenCV, etc.
+        if branch == 1:
+            self.Models = ["Hourglass", "Faster R-CNN"] # body pose estimators
+            menu = BodyMenu
+            name = "BodyMenu"
+        elif branch == 2:
+            self.Models = ["FAN"] # facial landmarks detector
+            menu = FaceMenu
+            name = "FaceMenu"
+        else:
+            self.Models = [] # empty
+            menu = BranchMenu
+            name = "BranchMenu"
         self.combo_model = Combobox(self, state="readonly", values=self.Models)
         self.combo_model.grid(row=2, column=1, sticky="nw", pady=10)
         self.combo_model.bind("<<ComboboxSelected>>", self.combo_callback)
@@ -133,7 +200,7 @@ class AI_Labeler(Frame):
         self.ref = Text(self, width=60, height=4, wrap="word", bg="white")
         self.ref.grid(row=4, column=0, columnspan=60, sticky="nw",padx=10, pady=10)
 
-        button1 = Button(self, text='Main Menu', command=lambda: controller.show_frame(MainMenu))
+        button1 = Button(self, text='Go Back', command=lambda: controller.show_frame(menu, name, branch))
         button1.grid(row=5, column=1, sticky="nw", padx=10, pady=10)
 
         button2 = Button(self, text='Exit', command=lambda: controller.exit())
@@ -208,10 +275,6 @@ class AI_Labeler(Frame):
             model = "hg"
             AI_models.hourglass_model(self.resource, model)
             messagebox.showinfo("Info", "AI Labeling is done!")
-        # elif self.combo_model.get() == "OpenCV" and os.path.isdir(self.resource):
-        #     model = "opencv"
-        #     AI_models.OpenCV_Model(self.resource, model)
-        #     # messagebox.showinfo("Info", "AI Labeling is done!")
         elif self.combo_model.get() == "Faster R-CNN":
             model = "fRCNN"
             AI_models.detectron2_model(self.resource, model)
@@ -245,8 +308,18 @@ class Human_Reviewer(Frame):
         btn_check = Button(self, text="Start Reviewing", command=self.review_label)
         btn_check.grid(row=3, column=1, sticky="nw", padx=5, pady=10)
 
-        button1 = Button(self, text='Main Menu',  # likewise StartPage
-                         command=lambda: controller.show_frame(MainMenu))
+        if branch == 1:
+            menu = BodyMenu
+            name = "BodyMenu"
+        elif branch == 2:
+            menu = FaceMenu
+            name = "FaceMenu"
+        else:
+            menu = BranchMenu
+            name = "BranchMenu"
+        
+        button1 = Button(self, text='Go Back',  # likewise StartPage
+                         command=lambda: controller.show_frame(menu, name, branch))
         button1.grid(row=3, column=2, sticky="nw", padx=10, pady=10)
 
         button2 = Button(self, text='Exit',  # likewise StartPage
@@ -295,6 +368,7 @@ class Human_Reviewer(Frame):
         # load AI kpts array
         with open(self.AIfile, 'rb') as f:
             data = pickle.load(f)
+        print(data)
         self.frames_kpts = data['all_keyps'][1]
         if self.model == "Hourglass":
             self.frames_boxes = data['all_boxes'][1]
@@ -515,8 +589,18 @@ class Human_Reviser(Frame):
         btn_fix = Button(self, text="Start Revising", command=self.revise_label)
         btn_fix.grid(row=4, column=1, sticky="nw", padx=5, pady=10)
 
-        button1 = Button(self, text='Main Menu',  # likewise StartPage
-                         command=lambda: controller.show_frame(MainMenu))
+        if branch == 1:
+            menu = BodyMenu
+            name = "BodyMenu"
+        elif branch == 2:
+            menu = FaceMenu
+            name = "FaceMenu"
+        else:
+            menu = BranchMenu
+            name = "BranchMenu"
+
+        button1 = Button(self, text='Go Back',  # likewise StartPage
+                         command=lambda: controller.show_frame(menu, name, branch))
         button1.grid(row=4, column=2, sticky="nw", padx=40, pady=10)
 
         button2 = Button(self, text='Exit',  # likewise StartPage

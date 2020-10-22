@@ -1,6 +1,6 @@
 matplotlib
-opencv-python==3.4.1.15
+opencv-python
 scipy==1.1.0
 tqdm
-pillow==3.4.2
+pillow
 easydict

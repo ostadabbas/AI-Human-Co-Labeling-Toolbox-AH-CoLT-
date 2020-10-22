@@ -29,6 +29,7 @@ def setup_cfg(args):
     cfg.MODEL.RETINANET.SCORE_THRESH_TEST = args.confidence_threshold
     cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = args.confidence_threshold
     cfg.MODEL.PANOPTIC_FPN.COMBINE.INSTANCES_CONFIDENCE_THRESH = args.confidence_threshold
+    cfg.MODEL.DEVICE = 'cpu'
     cfg.freeze()
     return cfg
 
@@ -91,6 +92,7 @@ def inference(source):
     args.image_dir=source
     args.input=None, 
     args.opts=['MODEL.WEIGHTS', 'Models/Detectron2/models/model_final_a6e10b.pkl']
+    #args.opts=['MODEL.DEVICE', 'cpu']
     args.output='output'
     args.video_input=None
     args.webcam=False
