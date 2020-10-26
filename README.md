@@ -19,7 +19,12 @@ Contact:
 
 ## Contents   
 *  [Requirements](#requirements)
-*  [Running the GUI](#running-the-gui)
+*  [Function selection](#function-selection)
+*  [Body Keypoints Estimation](#body-keypoints-estimation)
+    *  [Stage I: AI Labeler](#stage-i-ai-labeler)
+    *  [Stage II: Human Reviewer](#stage-ii-human-reviewer)
+    *  [Stage III: Human Reviser](#stage-iii-human-reviser)
+*  [Facial Landmarks Estimation](#facial-landmarks-estimation)
     *  [Stage I: AI Labeler](#stage-i-ai-labeler)
     *  [Stage II: Human Reviewer](#stage-ii-human-reviewer)
     *  [Stage III: Human Reviser](#stage-iii-human-reviser)
@@ -32,7 +37,7 @@ Contact:
 The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04.
 
 1. Install following libraries:
-    *  (1) [pyTorch](https://pytorch.org/) 1.6 with CPU
+    *  (1) [pyTorch](https://pytorch.org/) 1.6 without GPU
     *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md) without GPU
     *  (3) [face-alignment](https://github.com/1adrianb/face-alignment)
 2. Run `pip install -r requirements.txt` to install other libraries.
@@ -41,9 +46,15 @@ and put the model folder into `./Models/Hourglass/data/mpii`.
 4. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into `./Models/Detection/data`.
 5. Download one of COCO Person Keypoint Detection models from [Detectron2 Model Zoo](https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md).  (e.g. [keypoint_rcnn_R_50_FPN_3x](https://dl.fbaipublicfiles.com/detectron2/COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x/137849621/model_final_a6e10b.pkl), and put the file into `./Models/Detectron2/models`.
 
-## Running the GUI
-Run `Toolbox.py` to launch main window of AH-CoLT, which includes three stages: AI Labeler, Human Reviewer, and Human Reviser.
-For user convenience, each stage can be employed independently.
+## Function selection
+Run `Toolbox.py` to launch main window of AH-CoLT. The first step is to choose the subject of annotation. AH-CoLT provides both facial landmarks annotation and body keypoints annotation function. 
+The three stages annotation process,which includes: AI Labeler, Human Reviewer, and Human Reviser, will follow once clicking either function button. For user convenience, each stage can be employed independently.
+The first window is shown below:
+
+![FuncSelection](doc/FuncSelection.png)
+
+## Body Keypoints Estimation
+The Body Keypoints Estimation is mainly used to annotate the human body area for pose estimation.
 
 ![MainMenu](doc/MainMenu.png)
 
@@ -55,7 +66,6 @@ The types of labels outputted by the AI model is then displayed in the textbox.
 Model Selection:
 * Hourglass: 16 MPII keypoints for single-person images.
 * Faster R-CNN: 17 COCO keypoints for single-person images.
-* FAN: 68 facial landmarks for single-person images.
 
 The "AI Labeler" window
 ![AI_Labeler](doc/AI_Labeler.png)
@@ -123,6 +133,99 @@ ${ROOT}/img_gt.pkl
 ```
 The image revising window
 ![Revise_Window](doc/Revise_Window.png)
+
+The keypoints, which need to be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
+human reviser needs to capture the head bounding box by holding and releasing left button to create a pink rectangle. 
+
+| Operation | Description |
+| --- | --- |
+| Click left button of mouse| Capture the new position of red keypoint and set as 'visible' |
+| Click right button of mouse | Capture the new position of red keypoint and set as 'invisible' |
+| Press 'u' on keyboard | Undo |
+| Hold and release left button of mouse | Create a rectangle box |
+| Press 'y' on keyboard | Confirm revising of current image (ONLY work after revising all keypoints and capturing bounding box)
+
+**Note**: In MPII fashion or for the 68 facial landmarks, the rectangle box is created for head bounding box, while it is for body bounding box in COCO fashion.  
+
+## Facial Landmarks Estimation
+The Facial Landmarks Estimation is mainly used to annotate the facial area.
+
+![MainMenu](doc/MainMenu.png)
+
+### Stage I: AI Labeler
+AI labeler interface allows users to load a video or a collection of images as the unlabeled data source 
+and select an appropriate already trained model as the initial AI labeler. 
+The types of labels outputted by the AI model is then displayed in the textbox.
+
+Model Selection:
+* FAN: 68 facial landmarks for single-person images.
+
+The "AI Labeler" window
+![AI_Labeler_Face](doc/AI_Labeler_Face.png)
+
+#### Input
+Choose a directory of images set or a file of video. Each image could be .jpeg or .png file. The format of video file could be MP4, AVI or MOV.
+##### Example:
+```
+{ROOT}/face
+```
+#### Output
+1. If resource is a video, the corresponding frames will be generated first in folder `${root}/video_name`, which is named the video file name. 
+2. Predicted keypoints of all images/frames will be save in `dirname_model.pkl` under root path. Here `dirname` represents 
+the name of images/frames set and `model` is the abbreviation of name of selected model.
+##### Example:
+```
+${ROOT}/face_fan.pkl
+```
+
+### Stage II: Human Reviewer
+In this stage, the output of the AI labeling is given to a human reviewer for his/her evaluation. Reviewer needs check keypoints in order.
+
+#### Input
+1. Folder of images/frames set
+2. AI predicted keypoint file, which is generated by AI labeler.
+#### Output
+When all images have been reviewed, a flag list file will be save in `dirname_flag.pkl` under root path. Here `dirname` represents 
+the name of images/frames set.
+##### Example:
+```
+${ROOT}/face_flag.pkl
+```
+The image reviewing window
+![Review_Window_Face](doc/Review_Window_Face.png)
+
+The format of labels, which represent the AI predicted keypoints, is `poseindex_keypointindex`. 
+
+| Operation | Description |
+| --- | --- |
+| Click left button of mouse| Accept current predicted keypoint |
+| Click right button of mouse | Reject current predicted keypoint |
+| Press 'i' on keyboard | Insert a keypoint |
+| Press 'd' on keyboard | Delete current keypoint |
+| Press 'u' on keyboard | Undo |
+| Press 'y' on keyboard | Confirm reviewing of current image (ONLY work after checking all keypoints)
+| Press 'n' on keyboard | Recheck current image |
+
+#####Note:
+As we default all keypoints visible, if considering the visibility of each keypoint, please mark obscured keypoints as errors, 
+so that they can be annotated as invisible.
+
+### Stage III: Human Reviser
+In this stage, only the AI model errors detected by the human reviewer need to be revised.
+
+#### Input
+1. Folder of images/frames set
+2. AI predicted keypoint file, which is generated by AI labeler.
+3. Corresponding flag list file, which is generated by Human Reviewer.
+#### Output
+When all images have been revised, a groundtruth will be save in `dirname_gt.pkl` under root path. Here `dirname` represents 
+the name of images/frames set.
+##### Example:
+```
+${ROOT}/face_gt.pkl
+```
+The image revising window
+![Revise_Window_Face](doc/Revise_Window_Face.png)
 
 The keypoints, which need to be revised, are displayed in red. After correcting all keypoints marked as errors in one image, 
 human reviser needs to capture the head bounding box by holding and releasing left button to create a pink rectangle. 
