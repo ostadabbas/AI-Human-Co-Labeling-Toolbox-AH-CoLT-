@@ -49,12 +49,12 @@ and put the model folder into `./Models/Hourglass/data/mpii`.
 ## Function selection
 Run `Toolbox.py` to launch main window of AH-CoLT. The first step is to choose the subject of annotation. AH-CoLT provides both facial landmarks annotation and body keypoints annotation function. 
 The three stages annotation process,which includes: AI Labeler, Human Reviewer, and Human Reviser, will follow once clicking either function button. For user convenience, each stage can be employed independently.
-The first window is shown below:
+The task selection window
 
 ![FuncSelection](doc/FuncSelection.png)
 
-## Body Keypoints Estimation
-The Body Keypoints Estimation is mainly used to annotate the human body area for pose estimation.
+## Body Keypoints Annotation
+The Body Keypoints Annotation is mainly used to annotate the human body area for pose estimation.
 
 ![MainMenu](doc/MainMenu.png)
 
@@ -148,10 +148,10 @@ human reviser needs to capture the head bounding box by holding and releasing le
 
 **Note**: In MPII fashion or for the 68 facial landmarks, the rectangle box is created for head bounding box, while it is for body bounding box in COCO fashion.  
 
-## Facial Landmarks Estimation
-The Facial Landmarks Estimation is mainly used to annotate the facial area.
+## Facial Landmarks Annotation
+The Facial Landmarks Annotation is mainly used to annotate the facial area.
 
-![MainMenu](doc/MainMenu.png)
+![MainMenuFace](doc/MainMenuFace.png)
 
 ### Stage I: AI Labeler
 AI labeler interface allows users to load a video or a collection of images as the unlabeled data source 
