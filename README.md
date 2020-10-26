@@ -68,6 +68,7 @@ Model Selection:
 * Faster R-CNN: 17 COCO keypoints for single-person images.
 
 The "AI Labeler" window
+
 ![AI_Labeler](doc/AI_Labeler.png)
 
 #### Input
@@ -161,6 +162,7 @@ Model Selection:
 * FAN: 68 facial landmarks for single-person images.
 
 The "AI Labeler" window
+
 ![AI_Labeler_Face](doc/AI_Labeler_Face.png)
 
 #### Input
