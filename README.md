@@ -38,34 +38,39 @@ The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04. I
 
 1. Install following libraries:
     *  (1) [pyTorch](https://pytorch.org/)
-           For Windows
-           ```
-           pip install torch==1.7.0+cpu torchvision==0.8.1+cpu torchaudio===0.7.0 -f https://download.pytorch.org/whl/torch_stable.html
-           ```
+           
+       For Windows
+       ```
+       pip install torch==1.7.0+cpu torchvision==0.8.1+cpu torchaudio===0.7.0 -f \
+       https://download.pytorch.org/whl/torch_stable.html
+       ```
 
-           For Ubuntu
-           ```
-           pip install torch==1.7.0+cu101 torchvision==0.8.1+cu101 torchaudio==0.7.0 -f https://download.pytorch.org/whl/torch_stable.html
-           ```
+       For Ubuntu
+       ```
+       pip install torch==1.7.0+cu101 torchvision==0.8.1+cu101 torchaudio==0.7.0 -f \
+       https://download.pytorch.org/whl/torch_stable.html
+       ```
 
     *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md)
-           For Windows
-           ```
-           git clone https://github.com/facebookresearch/detectron2.git
-           python -m pip install -e detectron2
-           ```
+           
+       For Windows
+       ```
+       git clone https://github.com/facebookresearch/detectron2.git
+       python -m pip install -e detectron2
+       ```
 
-           For Ubuntu
-           ```
-           python -m pip install detectron2 -f \
-           https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.6/index.html
-           ```
+       For Ubuntu
+       ```
+       python -m pip install detectron2 -f \
+       https://dl.fbaipublicfiles.com/detectron2/wheels/cpu/torch1.6/index.html
+       ```
 
     *  (3) [face-alignment](https://github.com/1adrianb/face-alignment)
-           For Windows and Ubuntu
-           ```
-           pip install face-alignment
-           ```
+           
+       For Windows and Ubuntu
+       ```
+       pip install face-alignment
+       ```
 2. Run `pip install -r requirements.txt` to install other libraries.
 3. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
 and put the model folder into `./Models/Hourglass/data/mpii`.
