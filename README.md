@@ -4,10 +4,10 @@ The goal of the AH-CoLT is to provide an efficient and augmentative annotation t
 This toolbox presents an efficient semi-automatic groundtruth generation framework for unlabeled images/videos. 
 AH-CoLT enables accurate groundtruth labeling by incorporating the outcomes of state-of-the-art AI recognizers into a time-efficient human-based review and revise process.
 
-Now we integrate different 2D annotation models into toolbox:
-1. **Hourglass**: Single person 16 keypoints annotation in MPII fasion based on Hourglass pose estimation.
-2. **Faster RCNN**: Single person 17 keypoints annotation in COCO fashion based on Faster R-CNN pose estimation.
-3. **FAN**: Single person 68 facial landmarks based on FAN's face alignment.
+So far, we have integrated different 2D pose inference models into our toolbox:
+1. **Hourglass**: Single person 16 keypoints human body pose estimation in MPII fasion.
+2. **Faster RCNN**: Single person 17 keypoints human body pose estimation in COCO fashion.
+3. **FAN**: Single person 68 facial landmarks estmation based on FAN's face alignment.
 
 
 Contact: 
@@ -77,7 +77,7 @@ and put the model folder into `./Models/Hourglass/data/mpii`.
 4. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into `./Models/Detection/data`.
 5. Download one of COCO Person Keypoint Detection models from [Detectron2 Model Zoo](https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md).  (e.g. [keypoint_rcnn_R_50_FPN_3x](https://dl.fbaipublicfiles.com/detectron2/COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x/137849621/model_final_a6e10b.pkl), and put the file into `./Models/Detectron2/models`.
 
-## Function selection
+## Main Annotation Function Selection
 Run `Toolbox.py` to launch main window of AH-CoLT. The first step is to choose the subject of annotation. AH-CoLT provides both facial landmarks annotation and body keypoints annotation function. 
 The three stages annotation process,which includes: AI Labeler, Human Reviewer, and Human Reviser, will follow once clicking either function button. For user convenience, each stage can be employed independently.
 The task selection window
