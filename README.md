@@ -19,7 +19,7 @@ Contact:
 
 ## Contents   
 *  [Requirements](#requirements)
-*  [Function selection](#function-selection)
+*  [Main Annotation Function Selection](#function-selection)
 *  [Body Keypoints Estimation](#body-keypoints-estimation)
     *  [Stage I: AI Labeler](#stage-i-ai-labeler)
     *  [Stage II: Human Reviewer](#stage-ii-human-reviewer)
