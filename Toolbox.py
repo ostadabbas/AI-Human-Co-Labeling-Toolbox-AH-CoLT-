@@ -111,7 +111,7 @@ class BranchMenu(Frame):
         # Style().map('My.TButton', background=[('active', 'red')])
         button1 = Button(self, text='Body Keypoints Annotation', command=lambda: controller.show_frame(BodyMenu, "BodyMenu", 1), style='My.TButton')
         button1.pack(fill="both", pady=10, padx=200, expand=True)
-        button2 = Button(self, text='Faical Landmarks Annotation', command=lambda: controller.show_frame(FaceMenu, "FaceMenu", 2), style='My.TButton')
+        button2 = Button(self, text='Facial Landmarks Annotation', command=lambda: controller.show_frame(FaceMenu, "FaceMenu", 2), style='My.TButton')
         button2.pack(fill="both", pady=10, padx=200, expand=True)
         button4 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
         button4.pack(fill="both", pady=10, padx=200, expand=True)
@@ -144,7 +144,7 @@ class FaceMenu(Frame):
         Frame.__init__(self, parent)
 
         # Style().configure("My.TLabel", background='#fff4f7')
-        title = Label(self, text="Faical Landmarks Annotation", font="none 20 bold") #none 20 bold
+        title = Label(self, text="Facial Landmarks Annotation", font="none 20 bold") #none 20 bold
         title.pack(pady=10, padx=10)  # center alignment
 
         Style().configure("My.TButton", font=('Helvetica', 12))
