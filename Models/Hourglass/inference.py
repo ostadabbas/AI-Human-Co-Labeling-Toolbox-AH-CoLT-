@@ -83,7 +83,7 @@ def estimate(imgs_loader, model, num_classes, flip=True):
             output = model(input)
             score_map = output[-1].cpu() if type(output) == list else output.cpu()
             if flip:
-                flip_input = torch.from_numpy(fliplr(input.clone().numpy())).float().to(device)
+                flip_input = torch.from_numpy(fliplr(input.cpu().clone().numpy())).float().to(device)
                 flip_output = model(flip_input)
                 flip_output = flip_output[-1].cpu() if type(flip_output) == list else flip_output.cpu()
                 flip_output = flip_back(flip_output)
