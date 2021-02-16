@@ -166,7 +166,7 @@ def crop(img, center, scale, res, rot=0):
                         if len(img.shape) > 2 else torch.zeros(res[0], res[1])
         else:
             img = scipy.misc.imresize(img, [new_ht, new_wd])
-            center = center * 1.0 / sf
+            center = center * 1.0 / sf.cpu()
             scale = scale / sf
 
     # Upper left point
