@@ -48,7 +48,9 @@ class Imgs(data.Dataset):
             # detect person bounding box by yolo detector
             print(img_path)
             bbox = detect_person(img_path)
-
+            if bbox == []:
+                print('Do not detect person!')
+                bbox = [torch.tensor(0.0), torch.tensor(0.0), torch.tensor(img.shape[1]), torch.tensor(img.shape[0])]
             c, s = box2cs(bbox, img.shape[1], img.shape[0])
             # print("c",c)
             # print('s',s)
