@@ -30,8 +30,8 @@ dict_model = {
         "Faster R-CNN":" 0: Nose, 1: L_Eye, 2: R_Eye, 3: L_Ear, 4: R_Ear, 5: L_Shoulder, 6: R_Shoulder, 7: L_Elbow,"
                      " 8: R_Elbow, 9: L_Wrist, 10: R_Wrist, 11: L_Hip, 12: R_Hip, 13: L_Knee, 14: R_Knee, 15: L_Ankle, 16: R_Ankle",
 
-        "FAN":" 1-17: Jaw, 18-22: L_Eyebrow, 23-27: R_Eyebrow, 28-36: Nose, 37-42: L_Eye, 43-48: R_Eye, "               
-             " 49-60: Outer_Lip, 61-68: Inner_Lip",
+        "FAN":" 0-16: Jaw, 17-21: L_Eyebrow, 22-26: R_Eyebrow, 27-35: Nose, 36-41: L_Eye, 42-47: R_Eye, "               
+             " 48-59: Outer_Lip, 60-67: Inner_Lip",
 
         }
 
