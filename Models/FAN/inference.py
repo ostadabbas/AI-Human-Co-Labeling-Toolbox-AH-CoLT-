@@ -8,7 +8,7 @@ fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D,device='cpu',
 
 def fan_labeler(source):
     preds=[]
-    for filename in os.listdir(source):
+    for filename in sorted(os.listdir(source)):
         input_img = cv2.cvtColor(cv2.imread(source + "/" + filename),cv2.COLOR_BGR2RGB)
         preds.append(fa.get_landmarks(input_img)[-1])
     preds=np.array(preds)

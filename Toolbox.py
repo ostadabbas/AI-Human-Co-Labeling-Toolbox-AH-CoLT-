@@ -134,7 +134,7 @@ class BodyMenu(Frame):
         button2.pack(fill="both", pady=10, padx=200, expand=True)
         button3 = Button(self, text='Human Reviser', command=lambda: controller.show_frame(Human_Reviser, "Human_Reviser", branch), style='My.TButton')
         button3.pack(fill="both", pady=10, padx=200, expand=True)
-        button4 = Button(self, text='MainMenu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
+        button4 = Button(self, text='Main Menu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
         button4.pack(fill="both", pady=10, padx=200, expand=True)
         button5 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
         button5.pack(fill="both", pady=10, padx=200, expand=True)
@@ -156,7 +156,7 @@ class FaceMenu(Frame):
         button2.pack(fill="both", pady=10, padx=200, expand=True)
         button3 = Button(self, text='Human Reviser', command=lambda: controller.show_frame(Human_Reviser, "Human_Reviser", branch), style='My.TButton')
         button3.pack(fill="both", pady=10, padx=200, expand=True)
-        button4 = Button(self, text='MainMenu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
+        button4 = Button(self, text='Main Menu', command=lambda: controller.show_frame(BranchMenu, "BranchMenu", 0), style='My.TButton')
         button4.pack(fill="both", pady=10, padx=200, expand=True)
         button5 = Button(self, text='Exit', command=lambda: controller.exit(), style='My.TButton')
         button5.pack(fill="both", pady=10, padx=200, expand=True)
@@ -359,7 +359,7 @@ class Human_Reviewer(Frame):
         dict_flags.clear()
 
         # load images list
-        types = ('*.jpg', '*.png', '*,jpeg')
+        types = ('*.jpg', '*.png', '*.jpeg')
         files_grabbed = []
         for files in types:
             files_grabbed.extend(glob.glob(os.path.join(self.resource, files)))

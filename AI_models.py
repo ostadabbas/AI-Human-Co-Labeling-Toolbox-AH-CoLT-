@@ -14,7 +14,7 @@ def hourglass_model(resource, model):
     # create structure for AI Labeler result
     frames_name = []
     frames_kpts = []
-    types = ('*.jpg', '*.png')
+    types = ('*.jpg', '*.png', '*.jpeg')
     files_grabbed = []
     for files in types:
         files_grabbed.extend(glob.glob(os.path.join(resource, files)))
@@ -41,7 +41,7 @@ def detectron2_model(resource, model):
     # create structure for AI Labeler result
     frames_name = []
     frames_kpts = []
-    types = ('*.jpg', '*.png')
+    types = ('*.jpg', '*.png', '*.jpeg')
     files_grabbed = []
     for files in types:
         files_grabbed.extend(glob.glob(os.path.join(resource, files)))
@@ -77,7 +77,7 @@ def FAN_model(resource, model):
     # create structure for AI Labeler result
     frames_name = []
     frames_kpts = []
-    types = ('*.jpg', '*.png')
+    types = ('*.jpg', '*.png', '*.jpeg')
     files_grabbed = []
     for files in types:
         files_grabbed.extend(glob.glob(os.path.join(resource, files)))

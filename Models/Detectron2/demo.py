@@ -106,7 +106,7 @@ def inference(source):
     imglist = []
     name = []
     pred = dict()
-    for f in os.listdir(source):
+    for f in sorted(os.listdir(source)):
         if is_image_file(f):
             name.append(f)
             imglist.append(os.path.join(args.image_dir, f))
