@@ -124,6 +124,7 @@ def FAN_model(resource, model):
         base_path = os.path.join(resource + '-FAN',
                                  os.path.splitext(os.path.basename(image_file))[0])
         plt.savefig(base_path + '.jpg')
+        plt.close()
         with open(base_path + '.txt', 'w') as output_text:
             output_text.write('file: ' + os.path.split(image_file)[1] + '\n')
             output_text.write('x: ' + str(list(predicted_keypoints[0])) + '\n')
