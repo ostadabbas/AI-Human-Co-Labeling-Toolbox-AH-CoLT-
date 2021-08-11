@@ -8,10 +8,12 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector
+import matplotlib.patches as patches
 import matplotlib
 plt.switch_backend('TkAgg')
 import copy
 import glob
+import shutil
 
 import helpers
 import AI_models
@@ -823,6 +825,39 @@ class Human_Reviser(Frame):
             self.show_flags()
         else:
             helpers.savepkl(result, self.resource, "gt")
+            
+            # We create a new directory ("-GT") containing text files
+            # with coordinates of the final landmarks, as well 
+            # image files with the final landmarks painted onto
+            # the faces. This allows for manual inspection or external
+            # manipulation of the predictions.
+            if os.path.exists(self.resource + '-GT'):
+                shutil.rmtree(self.resource + '-GT')
+            os.makedirs(self.resource + '-GT')
+            for i, image_file in enumerate(result['images']):
+                result_keypoints = result['all_keyps'][1][i][0]
+                result_box = result['all_boxes'][i][0]
+                print('Saving results in image and text formats for ' 
+                      + os.path.split(image_file)[1])
+                image = plt.imread(os.path.join(self.resource, image_file))
+                fig, ax = plt.subplots()
+                ax.imshow(image)
+                ax.plot(result_keypoints[0], result_keypoints[1],
+                        'ro', markersize = 2)
+                rect = patches.Rectangle((result_box[0], result_box[1]), 
+                                         result_box[2] - result_box[0], result_box[3] - result_box[1],
+                                         linewidth=1, edgecolor='r', facecolor='none')
+                ax.add_patch(rect)
+                base_path = os.path.join(self.resource + '-GT',
+                                         os.path.splitext(os.path.basename(image_file))[0])
+                plt.savefig(base_path + '.jpg')
+                plt.close()
+                with open(base_path + '.txt', 'w') as output_text:
+                    output_text.write('file: ' + os.path.split(image_file)[1] + '\n')
+                    output_text.write('x: ' + str(list(result_keypoints[0])) + '\n')
+                    output_text.write('y: ' + str(list(result_keypoints[1])) + '\n')
+                    output_text.write('box: ' + str(list(result_box)) + '\n')
+            
             messagebox.showinfo("Information", "All frames are revised and keypoints are saved!")
             plt.close()
 

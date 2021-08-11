@@ -128,4 +128,4 @@ def FAN_model(resource, model):
         with open(base_path + '.txt', 'w') as output_text:
             output_text.write('file: ' + os.path.split(image_file)[1] + '\n')
             output_text.write('x: ' + str(list(predicted_keypoints[0])) + '\n')
-            output_text.write('x: ' + str(list(predicted_keypoints[1])) + '\n')
+            output_text.write('y: ' + str(list(predicted_keypoints[1])) + '\n')
