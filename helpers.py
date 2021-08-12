@@ -77,7 +77,7 @@ def drawkpts(img, lists_kpts, lists_vis, model):
                     if model == "FAN":
                         cv2.circle(img_draw, (int(x_kpts), int(y_kpts)), 2, (0, 255, 255), thickness=1, lineType=cv2.FILLED)
                     else:
-                        cv2.circle(img_draw, (int(x_kpts), int(y_kpts)), 8, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
+                        cv2.circle(img_draw, (int(x_kpts), int(y_kpts)), 4, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
                 # cv2.putText(img_draw, str(num)+"_"+str(i), (int(points[0, i]), int(points[1, i])), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 255, 255), 2, bottomLeftOrigin = True)
                 # plt.text(int(points[0, i]), int(points[1, i]), str(num)+"_"+str(i), color='b', fontsize=10)
                 else:
@@ -105,7 +105,7 @@ def drawflags(img, points, flags, model, idx):
         if model == "FAN":
             cv2.circle(img_draw, (int(points[0, i]), int(points[1, i])), 2, (0, 255, 255), thickness=1, lineType=cv2.FILLED)
         else:
-            cv2.circle(img_draw, (int(points[0, i]), int(points[1, i])), 8, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
+            cv2.circle(img_draw, (int(points[0, i]), int(points[1, i])), 4, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
         cv2.putText(img_draw, str(idx), (int(points[0, i]), int(points[1, i])), cv2.FONT_HERSHEY_COMPLEX, 0.5,
                     (0, 255, 255), 4, bottomLeftOrigin=True)
 

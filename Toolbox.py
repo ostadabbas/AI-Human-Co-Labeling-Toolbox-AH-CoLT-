@@ -433,7 +433,7 @@ class Human_Reviewer(Frame):
                         x_kpts = lists_kpts[num][0, i]
                         y_kpts = lists_kpts[num][1, i]
                         points.append((int(x_kpts), int(y_kpts)))
-                        plt.text(int(x_kpts), int(y_kpts),  str(num) + "_" + str(i), color='c', fontsize=12)
+                        plt.text(int(x_kpts), int(y_kpts),  str(num) + "_" + str(i), color='c', fontsize=9)
                     else:
                         points.append(None)
 
@@ -472,12 +472,12 @@ class Human_Reviewer(Frame):
         list = self.frames_kpts[self.idx]
         if len(flag) < len(vis_idx):
             if event.button == 1 and event.inaxes == self.ax2:
-                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)]%num_kpts)+'_R', color='b', fontsize=12)
+                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)]%num_kpts)+'_R', color='b', fontsize=9)
                 flag.append(1)
                 txt_list.append(txt)
             elif event.button == 3 and event.inaxes == self.ax2:
-                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)]%num_kpts)+'_W', color='r', fontsize=12)
-                point = plt.scatter(int(list[int(vis_idx[len(flag)]/num_kpts)][0, vis_idx[len(flag)]%num_kpts]),int(list[int(vis_idx[len(flag)]/num_kpts)][1, vis_idx[len(flag)]%num_kpts]), color='red', s = 50)
+                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)]%num_kpts)+'_W', color='r', fontsize=9)
+                point = plt.scatter(int(list[int(vis_idx[len(flag)]/num_kpts)][0, vis_idx[len(flag)]%num_kpts]),int(list[int(vis_idx[len(flag)]/num_kpts)][1, vis_idx[len(flag)]%num_kpts]), color='red', s = 9)
                 flag.append(0)
                 txt_list.append(txt)
                 pt_list.append(point)
@@ -491,7 +491,7 @@ class Human_Reviewer(Frame):
         if event.key == "d" and event.inaxes == self.ax2:
             if len(flag) < len(vis_idx):
                 print("delete keypoint")
-                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_D', color='r', fontsize=12)
+                txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_D', color='r', fontsize=9)
                 flag.append(-1)
                 txt_list.append(txt)
                 self.fig.canvas.draw()
@@ -504,16 +504,16 @@ class Human_Reviewer(Frame):
                 if len(flag) == 0 and vis_idx[0] > 0:
                     print("insert keypoint")
                     vis_idx = np.insert(vis_idx, len(flag), 0)
-                    txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_I', color='r', fontsize=12)
-                    point = plt.scatter(event.xdata, event.ydata, color='red', s=50)
+                    txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_I', color='r', fontsize=9)
+                    point = plt.scatter(event.xdata, event.ydata, color='red', s=9)
                     flag.append(2)
                     txt_list.append(txt)
                     self.fig.canvas.draw()
                 elif len(flag) > 0 and vis_idx[len(flag)-1]+1 < vis_idx[len(flag)]:
                     print("insert keypoint")
                     vis_idx = np.insert(vis_idx, len(flag), vis_idx[len(flag)-1]+1)
-                    txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_I', color='r', fontsize=12)
-                    point = plt.scatter(event.xdata, event.ydata, color='red', s=50)
+                    txt = plt.text(event.xdata, event.ydata, str(vis_idx[len(flag)] % num_kpts) + '_I', color='r', fontsize=9)
+                    point = plt.scatter(event.xdata, event.ydata, color='red', s=9)
                     flag.append(2)
                     txt_list.append(txt)
                     self.fig.canvas.draw()
@@ -561,7 +561,7 @@ class Human_Reviewer(Frame):
         ax.set_ylim((0, len(str_list) + 2))
         for i in range(len(str_list)):
             ax.text(0, (len(str_list) - i), str_list[i], fontsize=9)
-        ax.text(0, (len(str_list) + 1), "Keypoints Reference:", fontsize=12)
+        ax.text(0, (len(str_list) + 1), "Keypoints Reference:", fontsize=9)
 
 
 class Human_Reviser(Frame):
@@ -776,7 +776,7 @@ class Human_Reviser(Frame):
             for i in range(points.shape[1]):
                 if flags[i] == 0 or flags[i] == 2:
                     plt.plot(int(points[0, i]), int(points[1, i]), 'ro', markersize=8)
-                    plt.text(int(points[0, i]), int(points[1, i]), str(num) + "_" + str(i), color='r', fontsize=12)
+                    plt.text(int(points[0, i]), int(points[1, i]), str(num) + "_" + str(i), color='r', fontsize=9)
 
         # display keypoints reference in left subplot
         self.display_annotation(self.ax1)
@@ -869,7 +869,7 @@ class Human_Reviser(Frame):
                 txt = plt.text(event.xdata, event.ydata, str(fix[len(fixed)]%num_kpts)+'_vis',
                                horizontalalignment='right',
                                verticalalignment='bottom',
-                               color='b', fontsize=12)
+                               color='b', fontsize=9)
                 fixed.append([event.xdata, event.ydata, 1])
                 plot_list.append(plot)
                 txt_list.append(txt)
@@ -878,7 +878,7 @@ class Human_Reviser(Frame):
                 txt = plt.text(event.xdata, event.ydata, str(fix[len(fixed)]%num_kpts)+'_invis',
                                horizontalalignment='right',
                                verticalalignment='bottom',
-                               color='b', fontsize=12)
+                               color='b', fontsize=9)
                 fixed.append([event.xdata, event.ydata, 0])
                 plot_list.append(plot)
                 txt_list.append(txt)
@@ -924,7 +924,7 @@ class Human_Reviser(Frame):
         ax.set_ylim((0, len(str_list) + 2))
         for i in range(len(str_list)):
             ax.text(0, (len(str_list) - i), str_list[i], fontsize=9)
-        ax.text(0, (len(str_list) + 1), "Keypoints Reference:", fontsize=12)
+        ax.text(0, (len(str_list) + 1), "Keypoints Reference:", fontsize=9)
 
 if __name__ == '__main__':
     app = MainWindow()
