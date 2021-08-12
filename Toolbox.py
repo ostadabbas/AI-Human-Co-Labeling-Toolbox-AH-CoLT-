@@ -775,7 +775,7 @@ class Human_Reviser(Frame):
             flags = lists_flags[num]
             for i in range(points.shape[1]):
                 if flags[i] == 0 or flags[i] == 2:
-                    plt.plot(int(points[0, i]), int(points[1, i]), 'ro', markersize=8)
+                    plt.plot(int(points[0, i]), int(points[1, i]), 'ro', markersize=2)
                     plt.text(int(points[0, i]), int(points[1, i]), str(num) + "_" + str(i), color='r', fontsize=9)
 
         # display keypoints reference in left subplot
@@ -865,7 +865,7 @@ class Human_Reviser(Frame):
         global txt_list, fixed, plot_list
         if len(fixed) < len(fix):
             if event.button == 1 and event.inaxes == self.ax2:
-                plot, = plt.plot(event.xdata, event.ydata, 'bo', markersize=8)
+                plot, = plt.plot(event.xdata, event.ydata, 'bo', markersize=2)
                 txt = plt.text(event.xdata, event.ydata, str(fix[len(fixed)]%num_kpts)+'_vis',
                                horizontalalignment='right',
                                verticalalignment='bottom',
@@ -874,7 +874,7 @@ class Human_Reviser(Frame):
                 plot_list.append(plot)
                 txt_list.append(txt)
             elif event.button == 3 and event.inaxes == self.ax2:
-                plot, = plt.plot(event.xdata, event.ydata, 'bo', markersize=8)
+                plot, = plt.plot(event.xdata, event.ydata, 'bo', markersize=2)
                 txt = plt.text(event.xdata, event.ydata, str(fix[len(fixed)]%num_kpts)+'_invis',
                                horizontalalignment='right',
                                verticalalignment='bottom',
