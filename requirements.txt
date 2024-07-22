@@ -1,6 +1,6 @@
 matplotlib
 opencv-python
-scipy==1.1.0
+scipy
 tqdm
 pillow
 easydict

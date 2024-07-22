@@ -5,7 +5,7 @@ This toolbox presents an efficient semi-automatic groundtruth generation framewo
 AH-CoLT enables accurate groundtruth labeling by incorporating the outcomes of state-of-the-art AI recognizers into a time-efficient human-based review and revise process.
 
 So far, we have integrated different 2D pose inference models into our toolbox:
-1. **Hourglass**: Single person 16 keypoints human body pose estimation in MPII fasion.
+1. **Hourglass**: Single person 16 keypoints human body pose estimation in MPII fasion. (This has been terminated.)
 2. **Faster RCNN**: Single person 17 keypoints human body pose estimation in COCO fashion.
 3. **FAN**: Single person 68 facial landmarks estmation based on FAN's face alignment.
 
@@ -34,11 +34,15 @@ Contact:
 
 
 ## Requirements 
-The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04. It also passed the test on Windows10 platform with python3.7 and CPU.
+The interface of toolbox is developed by tkinter in python3.9 on macOS with M3. It also passed the test on Windows10 platform with python3.7 and CPU.
 
 1. Install following libraries:
     *  (1) [pyTorch](https://pytorch.org/)
-           
+       For macOS
+       ```
+       conda install pytorch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 -c pytorch
+       ```    
+
        For Windows
        ```
        pip install torch==1.7.0+cpu torchvision==0.8.1+cpu torchaudio===0.7.0 -f \
@@ -52,7 +56,11 @@ The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04. I
        ```
 
     *  (2) [detectron2](https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md)
-           
+       For macOS
+       ```
+       CC=clang CXX=clang++ ARCHFLAGS="-arch x86_64" python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+       ```  
+   
        For Windows
        ```
        git clone https://github.com/facebookresearch/detectron2.git
@@ -66,14 +74,12 @@ The interface of toolbox is developed by tkinter in python3.7 on Ubuntu 18.04. I
        ```
 
     *  (3) [face-alignment](https://github.com/1adrianb/face-alignment)
-           
-       For Windows and Ubuntu
        ```
        pip install face-alignment
        ```
 2. Run `pip install -r requirements.txt` to install other libraries.
 3. Download one of pretrained models (e.g. [8-stack hourglass model](https://drive.google.com/drive/folders/0B63t5HSgY4SQQ2FBRE5rQ2EzbjQ?usp=sharing)) 
-and put the model folder into `./Models/Hourglass/data/mpii`.
+and put the model folder into `./Models/Hourglass/data/mpii`. (Disabled)
 4. Download a weights file for YOLOv3 detector [here](https://pjreddie.com/media/files/yolov3.weights), and place it into `./Models/Detection/data`.
 5. Download one of COCO Person Keypoint Detection models from [Detectron2 Model Zoo](https://github.com/facebookresearch/detectron2/blob/master/MODEL_ZOO.md).  (e.g. [keypoint_rcnn_R_50_FPN_3x](https://dl.fbaipublicfiles.com/detectron2/COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x/137849621/model_final_a6e10b.pkl), and put the file into `./Models/Detectron2/models`.
 
@@ -95,15 +101,17 @@ and select an appropriate already trained model as the initial AI labeler.
 The types of labels outputted by the AI model is then displayed in the textbox.
 
 Model Selection:
-* Hourglass: 16 MPII keypoints for single-person images.
+* Hourglass: 16 MPII keypoints for single-person images. (Removed)
 * Faster R-CNN: 17 COCO keypoints for single-person images.
 
 The "AI Labeler" window
 
 ![AI_Labeler](doc/AI_Labeler.png)
-
+#### New Features :fire:
+1. Add human posture detection: after finishing the pose prediction by clicking 'Start Labeling', you can click 'Posture Labeling' to predict posture. 
+2. Output the visualization of predicted pose and posture after finishing the posture labeling.
 #### Input
-Choose a directory of images set or a file of video. Each image could be .jpeg or .png file. The format of video file could be MP4, AVI or MOV.
+Choose a single image, a directory of images set or a file of video. Each image could be .jpeg or .png file. The format of video file could be MP4, AVI or MOV.
 ##### Example:
 ```
 {ROOT}/img
@@ -114,7 +122,17 @@ Choose a directory of images set or a file of video. Each image could be .jpeg o
 the name of images/frames set and `model` is the abbreviation of name of selected model.
 ##### Example:
 ```
-${ROOT}/img_hg.pkl
+${ROOT}/testsample_fRCNN.pkl
+```
+3. Predicted posture class of all images/frames will be save in `dirname_posture.pkl` under root path. Here `dirname` represents the name of images/frames set.
+##### Example:
+```
+${ROOT}/testsample_posture.pkl
+```
+4. Visualization of pose and posture will be saved in `dirname_model_vis` folder. Here `dirname` represents the name of images/frames set and `model` is the abbreviation of name of selected model.
+##### Example:
+```
+${ROOT}/testsample_fRCNN_vis
 ```
 
 ### Stage II: Human Reviewer

@@ -1,3 +1,4 @@
+import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import filedialog
@@ -8,6 +9,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RectangleSelector
+from matplotlib.patches import Rectangle
 import matplotlib.patches as patches
 import matplotlib
 plt.switch_backend('TkAgg')
@@ -42,7 +44,7 @@ geometry = {
            "BranchMenu": "700x300",
            "BodyMenu": "700x300", 
            "FaceMenu": "700x300",
-           "AI_Labeler": "600x320",
+           "AI_Labeler": "700x320",
            "Human_Reviewer": "620x200",
            "Human_Reviser": "620x200"
            }
@@ -174,12 +176,12 @@ class AI_Labeler(Frame):
         self.output_res.grid(row=1, column=0, columnspan=4, sticky="nw",padx=10, pady=10)
         self.output_res.delete(0.0, END)
         btn_file = Button(self, text="Choose Resource", command=self.choose_resource)
-        btn_file.grid(row=1, column=4, sticky="nw", padx=10, pady=10)
+        btn_file.grid(row=1, column=2, sticky="nw", padx=5, pady=10)
 
         txt_model = Label(self, text="Please choose a model:")
         txt_model.grid(row=2, column=0, sticky="nw", padx=10, pady=10)
         if branch == 1:
-            self.Models = ["Hourglass", "Faster R-CNN"] # body pose estimators
+            self.Models = ["Faster R-CNN"] # body pose estimators
             menu = BodyMenu
             name = "BodyMenu"
         elif branch == 2:
@@ -195,6 +197,15 @@ class AI_Labeler(Frame):
         self.combo_model.bind("<<ComboboxSelected>>", self.combo_callback)
         btn_AI = Button(self, text="Start Labeling", command=self.AI_labeling)
         btn_AI.grid(row=2, column=2, sticky="nw", padx=5, pady=10)
+
+        ########## posture button  ############
+        if branch == 1:
+            btn_state = tk.NORMAL
+        else:
+            btn_state = tk.DISABLED
+        btn_AI_posture = Button(self, text="Posture Labeling", command=self.Posture_labeling, state=btn_state)
+        btn_AI_posture.grid(row=2, column=4, sticky="nw", padx=5, pady=10)
+        ########## posture button  ############
 
         # Keypoint annotation for different algorithms, as reference
         txt_explain = Label(self, text="KeyPoint annotation:")
@@ -215,8 +226,10 @@ class AI_Labeler(Frame):
         label = Label(popup,
                       text=" If the resource are images, please choose directory. Otherwise, please choose a video file.")
         label.pack(side="top", pady=10)
+        btn_img = Button(popup, text="Choose image", command=lambda: self.open_img(popup))
         btn_dir = Button(popup, text="Choose directory", command=lambda: self.open_dir(popup))
         btn_video = Button(popup, text="Choose video", command=lambda: self.open_video(popup))
+        btn_img.pack()
         btn_dir.pack()
         btn_video.pack()
         popup.mainloop()
@@ -226,6 +239,16 @@ class AI_Labeler(Frame):
         print(self.combo_model.current(), self.combo_model.get())
         self.ref.delete(0.0, END)
         self.ref.insert(END, dict_model[event.widget.get()])
+
+    def open_img(self, popup):
+        # load single image
+        popup.destroy()
+        self.resource = filedialog.askopenfilename(initialdir='.',
+                                                   filetypes=(("Image File", "*.jpg"),("JPG", "*.jpg"),("PNG", "*.png"),
+                                                              ("All Files", "*.*")),
+                                                   title="Choose a file")
+        self.output_res.delete(0.0, END)
+        self.output_res.insert(END, self.resource)
 
     def open_dir(self, popup):
         # load images folder
@@ -244,33 +267,170 @@ class AI_Labeler(Frame):
         self.output_res.delete(0.0, END)
         self.output_res.insert(END, self.resource)
 
+    def is_video_file(self, file_path):
+        video_extensions = ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.mpeg', '.mpg']
+        return any(file_path.lower().endswith(ext) for ext in video_extensions)
+
+    ########## Posture Labeling ##############
+    def Posture_labeling(self):
+        pred_file = self.resource + '_fRCNN.pkl'
+        if os.path.exists(pred_file):         
+            # start with labeling
+            AI_models.posture_model(pred_file, self.resource)
+            messagebox.showinfo("Info", "Posture Labeling is done!")
+        else:
+            messagebox.showwarning("Warning", "Please label pose first!")
+        self.pred_vis('fRCNN')
+    ########## Posture Labeling ##############
+
+    
+    ############ generating output figures. ##############
+    def pred_vis(self, model):
+        pred_pkl = self.resource + '_' + model + '.pkl'
+        pred_posture_pkl = self.resource + '_posture.pkl'
+
+        # load images list
+        types = ('*.jpg', '*.png', '*.jpeg')
+        files_grabbed = []
+        for files in types:
+            files_grabbed.extend(glob.glob(os.path.join(self.resource, files)))
+        im_list = sorted(files_grabbed)
+
+
+        # load AI posture array
+        with open(pred_posture_pkl, 'rb') as f:
+            posture_data = pickle.load(f)
+        #print(posture_data)
+        p_label = posture_data['prediction']
+        p_img = posture_data['image']
+        p_score = posture_data['score']
+
+        # load AI kpts array
+        with open(pred_pkl, 'rb') as f:
+            data = pickle.load(f)
+        #print(data)
+        frames_kpts = data['all_keyps'][1]
+        if model == "hg":
+            frames_boxes = data['all_boxes'][1]
+        else:
+            frames_boxes = data['all_boxes'][0]
+
+        nframes = len(frames_kpts)
+        print("Total frames: ", nframes)
+
+        output_fd = self.resource + '_' + model + '_vis'
+        if not os.path.exists(output_fd):
+            os.makedirs(output_fd)
+
+        for idx in range(nframes):
+            # load current image
+            im_name = os.path.basename(im_list[idx])
+            print(im_name)
+            if im_name == p_img[idx]:
+                print(p_label[idx])
+                print(p_score[idx][0])
+
+            posture_label = ['Supine', 'Prone', 'Sitting', 'Standing']
+            idx_list = np.argsort(p_score[idx][0])
+            str1 = posture_label[idx_list[3]] + ':%.4f'% p_score[idx][0][idx_list[3]]
+            str2 = posture_label[idx_list[2]] + ':%.4f'% p_score[idx][0][idx_list[2]]
+            str3 = posture_label[idx_list[1]] + ':%.4f'% p_score[idx][0][idx_list[1]]
+            str4 = posture_label[idx_list[0]] + ':%.4f'% p_score[idx][0][idx_list[0]]
+
+            img = cv2.imread(im_list[idx])
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+            # load current keypoints
+            lists_kpts = frames_kpts[idx]
+
+            if model == "hg" or model == "fRCNN" or model == "fan":
+                # single-person has only one pose
+                vis_pose_idx = [0]
+
+            lists_vis, flatten_vis = helpers.viskpts(img, lists_kpts, vis_pose_idx, self.combo_model.get())
+
+            num_poses = len(lists_kpts)
+            num_kpts = lists_kpts[0].shape[1]
+            vis_idx = np.nonzero(flatten_vis)[0]
+
+            fig, (ax1, ax2) = plt.subplots(1, 2, gridspec_kw={'width_ratios': [1, 6]}, figsize=(10, 6))
+            #fig.canvas.set_window_title(im_name)
+            fig.suptitle(im_name)
+
+            # draw keypoints on image
+            img = helpers.drawkpts(img, lists_kpts, lists_vis, self.combo_model.get(), p_score[idx][0])
+
+            # add text on image
+            num_pose = len(lists_kpts)
+            print("Total number of poses in current image: ", num_poses)
+            if num_poses > 0:
+                points = []
+                for num in range(num_poses):
+                    for i in range(num_kpts):
+                        if lists_vis[num][i] == 1:
+                            x_kpts = lists_kpts[num][0, i]
+                            y_kpts = lists_kpts[num][1, i]
+                            points.append((int(x_kpts), int(y_kpts)))
+                            plt.text(int(x_kpts), int(y_kpts),  str(num) + "_" + str(i), color='c', fontsize=9)
+                        else:
+                            points.append(None)   
+
+            # display keypoints reference in left subplot
+            str_list = dict_model[self.combo_model.get()].split(",")
+            ax1.set_axis_off()
+            ax1.set_ylim((0, len(str_list) + 2))
+            for i in range(len(str_list)):
+                ax1.text(0, (len(str_list) - i), str_list[i], fontsize=9)
+            ax1.text(0, (len(str_list) + 1), "Keypoints Reference:", fontsize=9)
+
+            # show image with keypoints in right subplot
+            ax2.imshow(img)
+            ax2.set_axis_off()
+            plt.tight_layout()
+            
+            file_path = os.path.join(output_fd, im_name)
+            plt.savefig(file_path)
+            #plt.close()
+            plt.show()
+    ############ generating output figures. ##############
+
     def AI_labeling(self):
         if len(self.output_res.get("1.0", END)) == 1:
             messagebox.showwarning("Warning", "Please choose source!")
 
         # if resource is video, generate frame set for selected video
         if os.path.isfile(self.resource):
-            print("Generating image set for video...")
-            file_name = os.path.splitext(os.path.basename(self.resource))[0]
-            folder = os.path.join(target, file_name)
-            if not os.path.exists(folder):
-                os.mkdir(folder)
+            if self.is_video_file(self.resource):
+                print("Generating image set for video...")
+                file_name = os.path.splitext(os.path.basename(self.resource))[0]
+                folder = os.path.join(target, file_name)
+                if not os.path.exists(folder):
+                    os.mkdir(folder)
 
-            cap = cv2.VideoCapture(self.resource)
-            currentframe = 0
-            while True:
-                ret, frame = cap.read()
-                if ret:
-                    name = 'frame_' + str(currentframe) + '.jpg'
-                    file = os.path.join(folder, name)
-                    print('Creating...' + name)
-                    cv2.imwrite(file, frame)
-                    currentframe += 1
-                else:
-                    break
-            cap.release()
-            cv2.destroyAllWindows()
-            self.resource = folder
+                cap = cv2.VideoCapture(self.resource)
+                currentframe = 0
+                while True:
+                    ret, frame = cap.read()
+                    if ret:
+                        name = 'frame_' + str(currentframe) + '.jpg'
+                        file = os.path.join(folder, name)
+                        print('Creating...' + name)
+                        cv2.imwrite(file, frame)
+                        currentframe += 1
+                    else:
+                        break
+                cap.release()
+                cv2.destroyAllWindows()
+                self.resource = folder
+            else:
+                # if resource is single image, create a folder to save it
+                file_name = os.path.splitext(os.path.basename(self.resource))[0]
+                folder = os.path.join(target, file_name)
+                if not os.path.exists(folder):
+                    os.mkdir(folder)
+                shutil.copy(self.resource, folder)
+                self.resource = folder
+      
 
         # start with AI labeling
         if self.combo_model.get() == "Hourglass":
@@ -280,6 +440,7 @@ class AI_Labeler(Frame):
         elif self.combo_model.get() == "Faster R-CNN":
             model = "fRCNN"
             AI_models.detectron2_model(self.resource, model)
+            #self.pred_vis(model)
             messagebox.showinfo("Info", "AI Labeling is done!")
         elif self.combo_model.get() == "FAN":                
             model = "fan"
@@ -287,11 +448,13 @@ class AI_Labeler(Frame):
             messagebox.showinfo("Info", "AI Labeling is done!")
         else:
             messagebox.showwarning("Warning", "Please choose proper model to label!")
-
+               
 
 class Human_Reviewer(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
+        self.controller = controller
+
         label = Label(self, text='Human Reviewer', font=LARGE_FONT)
         label.grid(row=0, column=2, columnspan=5, sticky="nw", padx=10, pady=10)
 
@@ -417,7 +580,8 @@ class Human_Reviewer(Frame):
         vis_idx = np.nonzero(flatten_vis)[0]
 
         self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2, gridspec_kw={'width_ratios': [1, 6]}, figsize=(10, 6))
-        self.fig.canvas.set_window_title(im_name)
+        #self.fig.canvas.set_window_title(im_name)
+        self.fig.suptitle(im_name)
 
         # draw keypoints on image
         img = helpers.drawkpts(img, lists_kpts, lists_vis, self.model)
@@ -761,7 +925,8 @@ class Human_Reviser(Frame):
                 fix.append(i)
 
         self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2, gridspec_kw={'width_ratios': [1, 6]}, figsize=(10, 6))
-        self.fig.canvas.set_window_title(im_name)
+        #self.fig.canvas.set_window_title(im_name)
+        self.fig.suptitle(im_name)
 
         # draw keypoints on image
         img = helpers.drawkpts(img, lists_kpts, lists_vis, self.model)
@@ -789,7 +954,7 @@ class Human_Reviser(Frame):
         self.fig.canvas.mpl_connect('button_press_event', self.onclick_revise)
         self.fig.canvas.mpl_connect('key_press_event', self.onkey_revise)
         self.rs = RectangleSelector(self.ax2, self.line_select_callback,
-                                        drawtype='box', useblit=False,
+                                        useblit=False,
                                         button=[1],  # don't use middle button
                                         minspanx=5, minspany=5,
                                         spancoords='pixels',

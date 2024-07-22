@@ -59,12 +59,13 @@ def viskpts(img, lists_kpts, vis_pose_idx, model):
     #         lists_vis_kpts.append(vis_kpts)
     return lists_vis_kpts, flatten_vis_kpts
 
-def drawkpts(img, lists_kpts, lists_vis, model):
+def drawkpts(img, lists_kpts, lists_vis, model, score = []):
     h = img.shape[0]
     w = img.shape[1]
     img_draw = img.copy()
     num_poses = len(lists_kpts)
     num_kpts = lists_kpts[0].shape[1]
+
     if num_poses > 0 :
         for num in range(num_poses):
             points = []
@@ -94,6 +95,52 @@ def drawkpts(img, lists_kpts, lists_vis, model):
                         cv2.line(img_draw, points[partA], points[partB], (200, 200, 0), 1)
                     else:
                         cv2.line(img_draw, points[partA], points[partB], (200, 200, 0), 2)
+
+            if len(score):
+                # add posture results on image          
+                posture_label = ['Supine', 'Prone', 'Sitting', 'Standing']
+                idx_list = np.argsort(score)
+                str1 = posture_label[idx_list[3]] + ':%.4f'% score[idx_list[3]]
+                str2 = posture_label[idx_list[2]] + ':%.4f'% score[idx_list[2]]
+                str3 = posture_label[idx_list[1]] + ':%.4f'% score[idx_list[1]]
+                str4 = posture_label[idx_list[0]] + ':%.4f'% score[idx_list[0]]
+                text_lines = [str1, str2, str3, str4]
+
+                # Define text properties
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 1.0
+                color = (255, 255, 255)  # White color in BGR
+                thickness = 1
+                line_type = cv2.LINE_AA
+
+                # Calculate the initial position
+                initial_x = 10  # Some padding from the left edge
+                initial_y = img_draw.shape[0] - 10  # Some padding from the bottom edge
+
+                # Calculate the height of a single line of text
+                (text_width, text_height), baseline = cv2.getTextSize(text_lines[0], font, font_scale, thickness)
+                line_spacing = text_height + baseline
+
+                # Calculate the width and height of the text block
+                max_text_width = max(cv2.getTextSize(line, font, font_scale, thickness)[0][0] for line in text_lines)
+                total_text_height = len(text_lines) * line_spacing
+                overlay = img_draw.copy()
+                # Draw the white background rectangle
+                top_left_corner = (initial_x - 5, initial_y - total_text_height - 5)
+                bottom_right_corner = (initial_x + max_text_width + 5, initial_y + 5)
+                alpha = 0.3
+                cv2.rectangle(img_draw, top_left_corner, bottom_right_corner, (255, 255, 255), thickness=cv2.FILLED)
+                # Blend the overlay with the original image
+                cv2.addWeighted(overlay, alpha, img_draw, 1 - alpha, 0, img_draw)
+
+                # Draw each line of text
+                for i, text in enumerate(reversed(text_lines)):  # Reverse to start from the bottom line
+                    if i == 3: 
+                        color = (255, 0, 0)  # White color in BGR
+                    else:
+                        color = (0, 0, 0)  # White color in BGR
+                    position = (initial_x, initial_y - i * line_spacing)
+                    cv2.putText(img_draw, text, position, font, font_scale, color, thickness, line_type)
 
     return img_draw
 

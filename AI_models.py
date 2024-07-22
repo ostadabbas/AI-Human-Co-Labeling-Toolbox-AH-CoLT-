@@ -7,6 +7,7 @@ import os
 from Models.Hourglass.inference import hg_labeler
 from Models.Detectron2.demo import inference
 from Models.FAN.inference import fan_labeler
+from Models.Posture.test_kpts_syrip_4class import inference_posture
 import helpers
 
 
@@ -50,19 +51,19 @@ def detectron2_model(resource, model):
     im_list = sorted(files_grabbed)
     for i in range(len(preds)):
         sp_kpts = []
-        frames_name.append(im_list[i])
+        frames_name.append(os.path.basename(im_list[i]))
         arr = np.empty([2, 17])
         filename = os.path.basename(im_list[i])
         print(filename)
         print(len(preds[filename]['keypoints']))	
-        if len(preds[filename]['keypoints']) == 0:
-            os.remove(os.path.join(resource, filename))
-            continue        
-            
-     
-        for j in range(len(preds[filename]['keypoints'][0])):          
-            arr[0, j] = preds[filename]['keypoints'][0][j][0]
-            arr[1, j] = preds[filename]['keypoints'][0][j][1]
+        if len(preds[filename]['keypoints']) == 0:        
+            for k in range(17):          
+                arr[0, k] = 0
+                arr[1, k] = 0          
+        else:
+            for j in range(len(preds[filename]['keypoints'][0])):          
+                arr[0, j] = preds[filename]['keypoints'][0][j][0]
+                arr[1, j] = preds[filename]['keypoints'][0][j][1]
         
         sp_kpts.append(arr)
         frames_kpts.append(sp_kpts)
@@ -70,8 +71,16 @@ def detectron2_model(resource, model):
     predictions = {}
     predictions['all_keyps'] = [[], frames_kpts]
     predictions['all_boxes'] = [[] for i in range(len(frames_kpts))]
+    predictions['all_frames'] = frames_name
 
     helpers.savepkl(predictions, resource, model)
+
+def posture_model(kpt_pred, resource):
+    preds, images, scores = inference_posture(kpt_pred)
+    # create structure for AI Labeler result
+    results = {"image": images, "prediction": preds, "score": scores}
+    helpers.savepkl(results, resource, 'posture')
+
 
 def FAN_model(resource, model):                 
     preds = fan_labeler(resource)

@@ -4,7 +4,7 @@ import os
 import numpy as np
 import cv2
 
-fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D,device='cpu', flip_input=False) # can change into gpu if cuda enabled
+fa = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D,device='cpu', flip_input=False) # can change into gpu if cuda enabled
 
 def fan_labeler(source):
     preds=[]
